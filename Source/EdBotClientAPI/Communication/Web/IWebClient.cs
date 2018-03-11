@@ -1,14 +1,17 @@
 ﻿namespace EdbotClientAPI.Communication.Web
 {
     using System;
+    using System.Net;
+    using WebSocketSharp;
 
     public interface IWebClient
     {
-        event EventHandler Connected;
-        event EventHandler Disconnected;
+        event EventHandler<EventArgs> Connected;
+        event EventHandler<CloseEventArgs> Disconnected;
+        event EventHandler<MessageEventArgs> OnMessage;
 
         void Connect();
         void Close();
-        void Send(string data);
+        void Send(WebHeaderCollection customHeader, string data);
     }
 }

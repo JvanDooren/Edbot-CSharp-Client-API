@@ -3,6 +3,7 @@ using EdbotClientAPI.Communication.Requests;
 using EdbotClientAPI.Communication.Web;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace EdbotClientDemonstrator
@@ -14,6 +15,8 @@ namespace EdbotClientDemonstrator
     {
         private EdbotClient edBotClient;
 
+        private string selectedEdbot;
+
         public EdbotDemonstrator()
         {
             InitializeComponent();
@@ -21,23 +24,36 @@ namespace EdbotClientDemonstrator
 
             IWebClient webClient = new WebClient("localhost", 8080, "/api/reporter/User/CSharp/2");
             edBotClient = new EdbotClient(webClient, new EdbotWebRequestFactory());
-            edBotClient.Connected += OnConnected;
+            edBotClient.ListedEdbots += OnListedEdbots;
             edBotClient.Connect();
         }
 
-        private void OnConnected(object sender, EventArgs e)
+        private void OnListedEdbots(object sender, EventArgs e)
         {
-            ServerStatusTextBox.Text = "Connected to server!";
+            Application.Current.Dispatcher.Invoke((Action)delegate {
+                foreach (string name in edBotClient.ConnectedEdbotNames)
+                {
+                    ConnectedEdbots.Items.Add(new ListBoxItem() { Content = name });
+                }
+                if (ConnectedEdbots.Items.Count > 0) ConnectedEdbots.SelectedIndex = 0;
+                ConnectedEdbots.Items.Refresh();
+                selectedEdbot = (ConnectedEdbots.SelectedItem as ListBoxItem).Content as string;
+            });
         }
 
         private void LedsOnButton_Click(object sender, RoutedEventArgs e)
         {
-            edBotClient.SetServoLED("Robotis Mini", "0/1");
+            edBotClient.SetServoLED(selectedEdbot, "0/1");
         }
 
         private void LedsOffButton_Click(object sender, RoutedEventArgs e)
         {
-            edBotClient.SetServoLED("Robotis Mini", "0/0");
+            edBotClient.SetServoLED(selectedEdbot, "0/0");
+        }
+
+        private void Edbots_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            selectedEdbot = (ConnectedEdbots.SelectedItem as ListBoxItem).Content as string;
         }
     }
 }

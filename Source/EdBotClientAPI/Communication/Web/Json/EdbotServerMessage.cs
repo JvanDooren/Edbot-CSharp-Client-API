@@ -1,6 +1,7 @@
 ﻿namespace EdbotClientAPI.Communication.Web.Json
 {
     using Newtonsoft.Json;
+    using System.Collections.Generic;
 
     public class EdbotServerMessage
     {
@@ -243,8 +244,8 @@
          *    \"user\":\"CSharp <User@[192.168.56.1]:54998>\"
          * }"
          */
-        //[JsonProperty("edbots")]
-        //public EdBot[] EdBots { get; set; }
+        [JsonProperty("edbots")]
+        public Dictionary<string, Edbot> Edbots { get; set; }
 
         [JsonProperty("auth")]
         public string Auth { get; set; }

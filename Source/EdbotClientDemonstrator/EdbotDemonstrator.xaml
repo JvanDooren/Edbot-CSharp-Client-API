@@ -9,8 +9,8 @@
     <Grid>
         <Image x:Name="EdbotOverviewImage" HorizontalAlignment="Left" Height="280" Margin="20,20,0,0" VerticalAlignment="Top" Width="200"/>
         <Button x:Name="LedsOnButton" Content="Leds on" HorizontalAlignment="Left" Margin="240,60,0,0" VerticalAlignment="Top" Width="75" Click="LedsOnButton_Click"/>
-        <Button x:Name="LedsOffButton" Content="Leds off" HorizontalAlignment="Left" Margin="320,60,0,0" VerticalAlignment="Top" Width="75" Click="LedsOffButton_Click"/>
-        <TextBox x:Name="ServerStatusTextBox" HorizontalAlignment="Left" Height="23" Margin="240,20,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="240"/>
+        <Button x:Name="LedsOffButton" Content="Leds off" HorizontalAlignment="Left" Margin="325,60,0,0" VerticalAlignment="Top" Width="75" Click="LedsOffButton_Click"/>
+        <ListBox x:Name="ConnectedEdbots" HorizontalAlignment="Left" Height="20" Margin="240,20,0,0" VerticalAlignment="Top" Width="160" SelectionChanged="Edbots_SelectionChanged"/>
 
     </Grid>
 </Window>

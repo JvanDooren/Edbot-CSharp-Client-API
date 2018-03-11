@@ -118,6 +118,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EdbotWebRequestFactoryTest.cs" />
     <Compile Include="EdbotServerMessageTest.cs" />
     <Compile Include="EdbotClientTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
