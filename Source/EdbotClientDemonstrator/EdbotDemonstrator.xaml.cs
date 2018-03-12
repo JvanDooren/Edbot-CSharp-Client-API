@@ -20,12 +20,18 @@ namespace EdbotClientDemonstrator
         public EdbotDemonstrator()
         {
             InitializeComponent();
+            this.Closed += new EventHandler(EdbotDemonstrator_Closed);
             EdbotOverviewImage.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources/edbot.png", UriKind.Absolute));
 
             IWebClient webClient = new WebClient("localhost", 8080, "/api/reporter/User/CSharp/2");
             edBotClient = new EdbotClient(webClient, new EdbotWebRequestFactory());
             edBotClient.ListedEdbots += OnListedEdbots;
             edBotClient.Connect();
+        }
+
+        private void EdbotDemonstrator_Closed(object sender, EventArgs e)
+        {
+            edBotClient.ListedEdbots -= OnListedEdbots;
         }
 
         private void OnListedEdbots(object sender, EventArgs e)

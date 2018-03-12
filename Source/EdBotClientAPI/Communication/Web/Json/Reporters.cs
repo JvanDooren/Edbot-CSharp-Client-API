@@ -59,16 +59,16 @@
         public int SpeechComplete { get; set; }
 
         [JsonProperty("port1")]
-        public int Port1 { get; set; }
+        public int? Port1 { get; set; }
 
         [JsonProperty("port2")]
-        public int Port2 { get; set; }
+        public int? Port2 { get; set; }
 
         [JsonProperty("port3")]
-        public int Port3 { get; set; }
+        public int? Port3 { get; set; }
 
         [JsonProperty("port4")]
-        public int Port4 { get; set; }
+        public int? Port4 { get; set; }
 
         //unknown type
         [JsonProperty("busy")]
