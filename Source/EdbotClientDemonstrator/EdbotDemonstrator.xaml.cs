@@ -2,6 +2,7 @@
 using EdbotClientAPI.Communication.Requests;
 using EdbotClientAPI.Communication.Web;
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -15,8 +16,6 @@ namespace EdbotClientDemonstrator
     {
         private EdbotClient edBotClient;
 
-        private string selectedEdbot;
-
         public EdbotDemonstrator()
         {
             InitializeComponent();
@@ -26,12 +25,16 @@ namespace EdbotClientDemonstrator
             IWebClient webClient = new WebClient("localhost", 8080, "/api/reporter/User/CSharp/2");
             edBotClient = new EdbotClient(webClient, new EdbotWebRequestFactory());
             edBotClient.ListedEdbots += OnListedEdbots;
+            edBotClient.ListedServoColours += OnListedColours;
+            edBotClient.ListedMotions += OnListedMotions;
             edBotClient.Connect();
         }
 
         private void EdbotDemonstrator_Closed(object sender, EventArgs e)
         {
             edBotClient.ListedEdbots -= OnListedEdbots;
+            edBotClient.ListedServoColours -= OnListedColours;
+            edBotClient.ListedMotions -= OnListedMotions;
         }
 
         private void OnListedEdbots(object sender, EventArgs e)
@@ -39,27 +42,58 @@ namespace EdbotClientDemonstrator
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 foreach (string name in edBotClient.ConnectedEdbotNames)
                 {
-                    ConnectedEdbots.Items.Add(new ListBoxItem() { Content = name });
+                    ConnectedEdbotsComboBox.Items.Add(new ComboBoxItem() { Content = name });
                 }
-                if (ConnectedEdbots.Items.Count > 0) ConnectedEdbots.SelectedIndex = 0;
-                ConnectedEdbots.Items.Refresh();
-                selectedEdbot = (ConnectedEdbots.SelectedItem as ListBoxItem).Content as string;
+                if (ConnectedEdbotsComboBox.Items.Count > 0) ConnectedEdbotsComboBox.SelectedIndex = 0;
+                ConnectedEdbotsComboBox.Items.Refresh();
             });
+
+            edBotClient.ListedEdbots -= OnListedEdbots;
+        }
+
+        private void OnListedColours(object sender, EventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke((Action)delegate {
+                foreach (string name in edBotClient.EdbotServoColours.Keys.ToList())
+                {
+                    ServoColoursComboBox.Items.Add(new ComboBoxItem() { Content = name });
+                }
+                if (ServoColoursComboBox.Items.Count > 0) ServoColoursComboBox.SelectedIndex = 0;
+                ServoColoursComboBox.Items.Refresh();
+            });
+
+            edBotClient.ListedServoColours -= OnListedColours;
+        }
+
+        private void OnListedMotions(object sender, EventArgs e)
+        {
+
+            edBotClient.ListedMotions -= OnListedMotions;
         }
 
         private void LedsOnButton_Click(object sender, RoutedEventArgs e)
         {
-            edBotClient.SetServoLED(selectedEdbot, "0/1");
+            if (ConnectedEdbotsComboBox.SelectedIndex < 0) return;
+            if (ServoColoursComboBox.SelectedIndex < 0) return;
+
+            int colourNumber = edBotClient.EdbotServoColours[(ServoColoursComboBox.SelectedItem as ListBoxItem).Content as string];
+            edBotClient.SetServoLED((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, string.Format("0/{0}", colourNumber));
         }
 
         private void LedsOffButton_Click(object sender, RoutedEventArgs e)
         {
-            edBotClient.SetServoLED(selectedEdbot, "0/0");
+            if (ConnectedEdbotsComboBox.SelectedIndex < 0) return;
+
+            int colourNumber = edBotClient.EdbotServoColours["Off"];
+            edBotClient.SetServoLED((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, string.Format("0/{0}", colourNumber));
         }
 
-        private void Edbots_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ConnectedEdbotsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            selectedEdbot = (ConnectedEdbots.SelectedItem as ListBoxItem).Content as string;
+        }
+
+        private void ServoColoursComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
         }
     }
 }

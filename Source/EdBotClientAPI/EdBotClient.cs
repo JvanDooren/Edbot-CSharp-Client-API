@@ -8,6 +8,7 @@
     using NLog;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using WebSocketSharp;
 
@@ -21,8 +22,12 @@
         public event EventHandler<EventArgs> Connected;
         public event EventHandler<CloseEventArgs> Disconnected;
         public event EventHandler<EventArgs> ListedEdbots;
+        public event EventHandler<EventArgs> ListedMotions;
+        public event EventHandler<EventArgs> ListedServoColours;
 
         public List<string> ConnectedEdbotNames { private set; get; }
+        public List<Motion> EdbotMotions { private set; get; }
+        public Dictionary<string, int> EdbotServoColours { private set; get; }
 
         private string Auth;
 
@@ -42,6 +47,8 @@
             this.requestFactory = requestFactory;
 
             ConnectedEdbotNames = new List<string>();
+            EdbotMotions = new List<Motion>();
+            EdbotServoColours = new Dictionary<string, int>();
         }
 
         /// <summary>
@@ -89,6 +96,8 @@
                 if (edbotMessage == null) return;
                 UpdateAuth(edbotMessage);
                 UpdateConnectedEdBotNamesList(edbotMessage);
+                UpdateMotionsList(edbotMessage);
+                UpdateServoColourList(edbotMessage);
             }
             catch (Exception ex)
             {
@@ -169,7 +178,7 @@
         }
 
         public void SetCustom(string edBotName, string path)
-{
+        {
             string request = requestFactory.CreateSetCustom(edBotName, path);
             APIRequest(request);
         }
@@ -185,20 +194,53 @@
 
         private void UpdateAuth(EdbotServerMessage edbotMessage)
         {
-            if (edbotMessage.Auth != null) Auth = edbotMessage.Auth;
+            if (edbotMessage.Auth != null)
+            {
+                Auth = edbotMessage.Auth;
+            }
         }
 
         private void UpdateConnectedEdBotNamesList(EdbotServerMessage edbotMessage)
         {
             if (edbotMessage.Edbots != null && edbotMessage.Edbots.Count > 0)
             {
-                foreach (string name in edbotMessage.Edbots.Keys)
+                ConnectedEdbotNames = ConnectedEdbotNames.Union(edbotMessage.Edbots.Keys.ToList()).ToList();
+                ListedEdbots?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void UpdateMotionsList(EdbotServerMessage edbotMessage)
+        {
+            if (edbotMessage.Edbots != null && edbotMessage.Edbots.Count > 0)
+            {
+                Motions possibleMotions = edbotMessage.Edbots.First().Value.Motions;
+                if (possibleMotions != null && possibleMotions.All != null)
                 {
-                    if (!ConnectedEdbotNames.Contains(name)) ConnectedEdbotNames.Add(name);
+                    EdbotMotions = EdbotMotions.Union(possibleMotions.All).ToList();
+                    ListedMotions?.Invoke(this, EventArgs.Empty);
                 }
             }
+        }
 
-            ListedEdbots?.Invoke(this, EventArgs.Empty);
+        private void UpdateServoColourList(EdbotServerMessage edbotMessage)
+        {
+            if (edbotMessage.Edbots != null && edbotMessage.Edbots.Count > 0)
+            {
+                Colours possibleColours = edbotMessage.Edbots.First().Value.Colours;
+                if (possibleColours != null)
+                {
+                    EdbotServoColours.Add("Blue", possibleColours.Blue);
+                    EdbotServoColours.Add("Cyan", possibleColours.Cyan);
+                    EdbotServoColours.Add("Green", possibleColours.Green);
+                    EdbotServoColours.Add("Magenta", possibleColours.Magenta);
+                    EdbotServoColours.Add("Off", possibleColours.Off);
+                    EdbotServoColours.Add("Red", possibleColours.Red);
+                    EdbotServoColours.Add("White", possibleColours.White);
+                    EdbotServoColours.Add("Yellow", possibleColours.Yellow);
+
+                    ListedServoColours?.Invoke(this, EventArgs.Empty);
+                }
+            }
         }
     }
 }

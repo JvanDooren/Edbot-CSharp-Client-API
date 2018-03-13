@@ -5,12 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EdbotClientDemonstrator"
         mc:Ignorable="d"
-        Title="EdbotDemonstrator" Height="350" Width="525">
+        Title="EdbotDemonstrator" Height="387" Width="525">
     <Grid>
-        <Image x:Name="EdbotOverviewImage" HorizontalAlignment="Left" Height="280" Margin="20,20,0,0" VerticalAlignment="Top" Width="200"/>
-        <Button x:Name="LedsOnButton" Content="Leds on" HorizontalAlignment="Left" Margin="240,60,0,0" VerticalAlignment="Top" Width="75" Click="LedsOnButton_Click"/>
-        <Button x:Name="LedsOffButton" Content="Leds off" HorizontalAlignment="Left" Margin="325,60,0,0" VerticalAlignment="Top" Width="75" Click="LedsOffButton_Click"/>
-        <ListBox x:Name="ConnectedEdbots" HorizontalAlignment="Left" Height="20" Margin="240,20,0,0" VerticalAlignment="Top" Width="160" SelectionChanged="Edbots_SelectionChanged"/>
+        <Image x:Name="EdbotOverviewImage" HorizontalAlignment="Left" Height="280" Margin="20,60,0,0" VerticalAlignment="Top" Width="200"/>
+        <Button x:Name="LedsOnButton" Content="Leds on" HorizontalAlignment="Left" Margin="240,60,0,0" VerticalAlignment="Top" Width="75" Click="LedsOnButton_Click" Height="22"/>
+        <Button x:Name="LedsOffButton" Content="Leds off" HorizontalAlignment="Left" Margin="425,60,0,0" VerticalAlignment="Top" Width="75" Click="LedsOffButton_Click" RenderTransformOrigin="0.733,0.5" Height="22"/>
+        <ComboBox x:Name="ConnectedEdbotsComboBox" HorizontalAlignment="Left" Margin="115,21,0,0" VerticalAlignment="Top" Width="105" SelectionChanged="ConnectedEdbotsComboBox_SelectionChanged" Height="26"/>
+        <ComboBox x:Name="ServoColoursComboBox" HorizontalAlignment="Left" Margin="320,60,0,0" VerticalAlignment="Top" Width="100" SelectionChanged="ServoColoursComboBox_SelectionChanged"/>
+        <Label x:Name="label" Content="Selected Edbot" HorizontalAlignment="Left" Margin="20,21,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>
