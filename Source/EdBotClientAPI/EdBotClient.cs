@@ -26,7 +26,7 @@
         public event EventHandler<EventArgs> ListedServoColours;
 
         public List<string> ConnectedEdbotNames { private set; get; }
-        public List<Motion> EdbotMotions { private set; get; }
+        public Dictionary<string, int> EdbotMotions { private set; get; }
         public Dictionary<string, int> EdbotServoColours { private set; get; }
 
         private string Auth;
@@ -47,7 +47,7 @@
             this.requestFactory = requestFactory;
 
             ConnectedEdbotNames = new List<string>();
-            EdbotMotions = new List<Motion>();
+            EdbotMotions = new Dictionary<string, int>();
             EdbotServoColours = new Dictionary<string, int>();
         }
 
@@ -216,7 +216,14 @@
                 Motions possibleMotions = edbotMessage.Edbots.First().Value.Motions;
                 if (possibleMotions != null && possibleMotions.All != null)
                 {
-                    EdbotMotions = EdbotMotions.Union(possibleMotions.All).ToList();
+                    Dictionary<string, int> allMotions = new Dictionary<string, int>();
+                    foreach (Motion motion in possibleMotions.All)
+                    {
+                        allMotions.Add(motion.Name, motion.Id);
+                    }
+
+                    EdbotMotions = EdbotMotions.Union(allMotions).ToDictionary(k => k.Key, v => v.Value);
+
                     ListedMotions?.Invoke(this, EventArgs.Empty);
                 }
             }

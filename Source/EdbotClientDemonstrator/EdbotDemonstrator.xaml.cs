@@ -67,6 +67,14 @@ namespace EdbotClientDemonstrator
 
         private void OnListedMotions(object sender, EventArgs e)
         {
+            Application.Current.Dispatcher.Invoke((Action)delegate {
+                foreach (string name in edBotClient.EdbotMotions.Keys.ToList())
+                {
+                    MotionsComboBox.Items.Add(new ComboBoxItem() { Content = name });
+                }
+                if (MotionsComboBox.Items.Count > 0) MotionsComboBox.SelectedIndex = 0;
+                MotionsComboBox.Items.Refresh();
+            });
 
             edBotClient.ListedMotions -= OnListedMotions;
         }
@@ -88,12 +96,13 @@ namespace EdbotClientDemonstrator
             edBotClient.SetServoLED((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, string.Format("0/{0}", colourNumber));
         }
 
-        private void ConnectedEdbotsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ActivateMotionButton_Click(object sender, RoutedEventArgs e)
         {
-        }
+            if (ConnectedEdbotsComboBox.SelectedIndex < 0) return;
+            if (MotionsComboBox.SelectedIndex < 0) return;
 
-        private void ServoColoursComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+            int motionNumber = edBotClient.EdbotMotions[(MotionsComboBox.SelectedItem as ListBoxItem).Content as string];
+            edBotClient.RunMotion((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, motionNumber);
         }
     }
 }

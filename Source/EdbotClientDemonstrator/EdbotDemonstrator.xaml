@@ -10,9 +10,11 @@
         <Image x:Name="EdbotOverviewImage" HorizontalAlignment="Left" Height="280" Margin="20,60,0,0" VerticalAlignment="Top" Width="200"/>
         <Button x:Name="LedsOnButton" Content="Leds on" HorizontalAlignment="Left" Margin="240,60,0,0" VerticalAlignment="Top" Width="75" Click="LedsOnButton_Click" Height="22"/>
         <Button x:Name="LedsOffButton" Content="Leds off" HorizontalAlignment="Left" Margin="425,60,0,0" VerticalAlignment="Top" Width="75" Click="LedsOffButton_Click" RenderTransformOrigin="0.733,0.5" Height="22"/>
-        <ComboBox x:Name="ConnectedEdbotsComboBox" HorizontalAlignment="Left" Margin="115,21,0,0" VerticalAlignment="Top" Width="105" SelectionChanged="ConnectedEdbotsComboBox_SelectionChanged" Height="26"/>
-        <ComboBox x:Name="ServoColoursComboBox" HorizontalAlignment="Left" Margin="320,60,0,0" VerticalAlignment="Top" Width="100" SelectionChanged="ServoColoursComboBox_SelectionChanged"/>
+        <ComboBox x:Name="ConnectedEdbotsComboBox" HorizontalAlignment="Left" Margin="115,21,0,0" VerticalAlignment="Top" Width="105" Height="26"/>
+        <ComboBox x:Name="ServoColoursComboBox" HorizontalAlignment="Left" Margin="320,60,0,0" VerticalAlignment="Top" Width="100"/>
         <Label x:Name="label" Content="Selected Edbot" HorizontalAlignment="Left" Margin="20,21,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="MotionsComboBox" HorizontalAlignment="Left" Margin="365,95,0,0" VerticalAlignment="Top" Width="135" Height="22"/>
+        <Button x:Name="ActivateMotionButton" Content="Activate motion" HorizontalAlignment="Left" Margin="240,95,0,0" VerticalAlignment="Top" Width="120" Click="ActivateMotionButton_Click" Height="22"/>
 
     </Grid>
 </Window>
