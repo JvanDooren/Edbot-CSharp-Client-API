@@ -104,5 +104,13 @@ namespace EdbotClientDemonstrator
             int motionNumber = edBotClient.EdbotMotions[(MotionsComboBox.SelectedItem as ListBoxItem).Content as string];
             edBotClient.RunMotion((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, motionNumber);
         }
+
+        private void SpeakButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ConnectedEdbotsComboBox.SelectedIndex < 0) return;
+            if (string.IsNullOrWhiteSpace(SpeakTextBox.Text)) return;
+
+            edBotClient.Say((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, SpeakTextBox.Text);
+        }
     }
 }
