@@ -40,43 +40,55 @@ namespace EdbotClientDemonstrator
         private void OnListedEdbots(object sender, EventArgs e)
         {
             Application.Current.Dispatcher.Invoke((Action)delegate {
+                //check if names were added
+                bool added = false;
                 foreach (string name in edBotClient.ConnectedEdbotNames)
                 {
-                    ConnectedEdbotsComboBox.Items.Add(new ComboBoxItem() { Content = name });
+                    if (!ConnectedEdbotsComboBox.Items.Contains(name))
+                    {
+                        added = true;
+                        ConnectedEdbotsComboBox.Items.Add(name);
+                    }
                 }
-                if (ConnectedEdbotsComboBox.Items.Count > 0) ConnectedEdbotsComboBox.SelectedIndex = 0;
-                ConnectedEdbotsComboBox.Items.Refresh();
+                if (ConnectedEdbotsComboBox.Items.Count > 0 && ConnectedEdbotsComboBox.SelectedIndex == -1) ConnectedEdbotsComboBox.SelectedIndex = 0;
+                if (added) ConnectedEdbotsComboBox.Items.Refresh();
             });
-
-            edBotClient.ListedEdbots -= OnListedEdbots;
         }
 
         private void OnListedColours(object sender, EventArgs e)
         {
             Application.Current.Dispatcher.Invoke((Action)delegate {
+                //check if names were added
+                bool added = false;
                 foreach (string name in edBotClient.EdbotServoColours.Keys.ToList())
                 {
-                    ServoColoursComboBox.Items.Add(new ComboBoxItem() { Content = name });
+                    if (!ServoColoursComboBox.Items.Contains(name))
+                    {
+                        added = true;
+                        ServoColoursComboBox.Items.Add(name);
+                    }
                 }
-                if (ServoColoursComboBox.Items.Count > 0) ServoColoursComboBox.SelectedIndex = 0;
-                ServoColoursComboBox.Items.Refresh();
+                if (ServoColoursComboBox.Items.Count > 0 && ServoColoursComboBox.SelectedIndex == -1) ServoColoursComboBox.SelectedIndex = 0;
+                if (added) ServoColoursComboBox.Items.Refresh();
             });
-
-            edBotClient.ListedServoColours -= OnListedColours;
         }
 
         private void OnListedMotions(object sender, EventArgs e)
         {
             Application.Current.Dispatcher.Invoke((Action)delegate {
+                //check if names were added
+                bool added = false;
                 foreach (string name in edBotClient.EdbotMotions.Keys.ToList())
                 {
-                    MotionsComboBox.Items.Add(new ComboBoxItem() { Content = name });
+                    if (!MotionsComboBox.Items.Contains(name))
+                    {
+                        added = true;
+                        MotionsComboBox.Items.Add(name);
+                    }
                 }
-                if (MotionsComboBox.Items.Count > 0) MotionsComboBox.SelectedIndex = 0;
-                MotionsComboBox.Items.Refresh();
+                if (MotionsComboBox.Items.Count > 0 && MotionsComboBox.SelectedIndex == -1) MotionsComboBox.SelectedIndex = 0;
+                if (added) MotionsComboBox.Items.Refresh();
             });
-
-            edBotClient.ListedMotions -= OnListedMotions;
         }
 
         private void LedsOnButton_Click(object sender, RoutedEventArgs e)
@@ -84,8 +96,8 @@ namespace EdbotClientDemonstrator
             if (ConnectedEdbotsComboBox.SelectedIndex < 0) return;
             if (ServoColoursComboBox.SelectedIndex < 0) return;
 
-            int colourNumber = edBotClient.EdbotServoColours[(ServoColoursComboBox.SelectedItem as ListBoxItem).Content as string];
-            edBotClient.SetServoLED((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, string.Format("0/{0}", colourNumber));
+            int colourNumber = edBotClient.EdbotServoColours[ServoColoursComboBox.SelectedItem as string];
+            edBotClient.SetServoLED(ConnectedEdbotsComboBox.SelectedItem as string, string.Format("0/{0}", colourNumber));
         }
 
         private void LedsOffButton_Click(object sender, RoutedEventArgs e)
@@ -93,7 +105,7 @@ namespace EdbotClientDemonstrator
             if (ConnectedEdbotsComboBox.SelectedIndex < 0) return;
 
             int colourNumber = edBotClient.EdbotServoColours["Off"];
-            edBotClient.SetServoLED((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, string.Format("0/{0}", colourNumber));
+            edBotClient.SetServoLED(ConnectedEdbotsComboBox.SelectedItem as string, string.Format("0/{0}", colourNumber));
         }
 
         private void ActivateMotionButton_Click(object sender, RoutedEventArgs e)
@@ -101,8 +113,8 @@ namespace EdbotClientDemonstrator
             if (ConnectedEdbotsComboBox.SelectedIndex < 0) return;
             if (MotionsComboBox.SelectedIndex < 0) return;
 
-            int motionNumber = edBotClient.EdbotMotions[(MotionsComboBox.SelectedItem as ListBoxItem).Content as string];
-            edBotClient.RunMotion((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, motionNumber);
+            int motionNumber = edBotClient.EdbotMotions[MotionsComboBox.SelectedItem as string];
+            edBotClient.RunMotion(ConnectedEdbotsComboBox.SelectedItem as string, motionNumber);
         }
 
         private void SpeakButton_Click(object sender, RoutedEventArgs e)
@@ -110,7 +122,7 @@ namespace EdbotClientDemonstrator
             if (ConnectedEdbotsComboBox.SelectedIndex < 0) return;
             if (string.IsNullOrWhiteSpace(SpeakTextBox.Text)) return;
 
-            edBotClient.Say((ConnectedEdbotsComboBox.SelectedItem as ListBoxItem).Content as string, SpeakTextBox.Text);
+            edBotClient.Say(ConnectedEdbotsComboBox.SelectedItem as string, SpeakTextBox.Text);
         }
     }
 }
