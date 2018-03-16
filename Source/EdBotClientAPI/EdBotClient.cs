@@ -205,7 +205,7 @@
             if (edbotMessage.Edbots != null && edbotMessage.Edbots.Count > 0)
             {
                 //show only connected and enabled edbots
-                Dictionary<string, Edbot> edbots = edbotMessage.Edbots.Where(x => x.Value.Connected && x.Value.Enabled).ToDictionary(k => k.Key, v => v.Value);
+                Dictionary<string, Edbot> edbots = edbotMessage.Edbots.ToDictionary(k => k.Key, v => v.Value);
                 ConnectedEdbotNames = ConnectedEdbotNames.Union(edbots.Keys.ToList()).ToList();
                 ListedEdbots?.Invoke(this, EventArgs.Empty);
             }
