@@ -24,10 +24,27 @@
         public event EventHandler<EventArgs> ListedEdbots;
         public event EventHandler<EventArgs> ListedMotions;
         public event EventHandler<EventArgs> ListedServoColours;
+        public event EventHandler<EventArgs> ListedSensors;
 
+        /// <summary>
+        /// List of edbotname
+        /// </summary>
         public List<string> ConnectedEdbotNames { private set; get; }
+
+        /// <summary>
+        /// Dictionary from motionname to API number
+        /// </summary>
         public Dictionary<string, int> EdbotMotions { private set; get; }
+
+        /// <summary>
+        /// Dictionary from colourname to API number
+        /// </summary>
         public Dictionary<string, int> EdbotServoColours { private set; get; }
+
+        /// <summary>
+        /// Dictionary from edbotname to Dictionary from sensorname to value
+        /// </summary>
+        public Dictionary<string, Dictionary<string, int>> EdbotSensorValues { private set; get; }
 
         private string Auth;
 
@@ -49,6 +66,7 @@
             ConnectedEdbotNames = new List<string>();
             EdbotMotions = new Dictionary<string, int>();
             EdbotServoColours = new Dictionary<string, int>();
+            EdbotSensorValues = new Dictionary<string, Dictionary<string, int>>();
         }
 
         /// <summary>
@@ -98,6 +116,7 @@
                 UpdateConnectedEdBotNamesList(edbotMessage);
                 UpdateMotionsList(edbotMessage);
                 UpdateServoColourList(edbotMessage);
+                UpdateSensorValueList(edbotMessage);
             }
             catch (Exception ex)
             {
@@ -200,55 +219,93 @@
             }
         }
 
+        private bool HasEdbots(EdbotServerMessage edbotMessage)
+        {
+            return edbotMessage.Edbots != null && edbotMessage.Edbots.Count > 0;
+        }
+
         private void UpdateConnectedEdBotNamesList(EdbotServerMessage edbotMessage)
         {
-            if (edbotMessage.Edbots != null && edbotMessage.Edbots.Count > 0)
-            {
-                //show only connected and enabled edbots
-                Dictionary<string, Edbot> edbots = edbotMessage.Edbots.ToDictionary(k => k.Key, v => v.Value);
-                ConnectedEdbotNames = ConnectedEdbotNames.Union(edbots.Keys.ToList()).ToList();
-                ListedEdbots?.Invoke(this, EventArgs.Empty);
-            }
+            if (!HasEdbots(edbotMessage)) return;
+
+            //show only connected and enabled edbots
+            Dictionary<string, Edbot> edbots = edbotMessage.Edbots.ToDictionary(k => k.Key, v => v.Value);
+            ConnectedEdbotNames = ConnectedEdbotNames.Union(edbots.Keys.ToList()).ToList();
+            ListedEdbots?.Invoke(this, EventArgs.Empty);
         }
 
         private void UpdateMotionsList(EdbotServerMessage edbotMessage)
         {
-            if (edbotMessage.Edbots != null && edbotMessage.Edbots.Count > 0)
+            if (!HasEdbots(edbotMessage)) return;
+
+            Motions possibleMotions = edbotMessage.Edbots.First().Value.Motions;
+            if (possibleMotions != null && possibleMotions.All != null)
             {
-                Motions possibleMotions = edbotMessage.Edbots.First().Value.Motions;
-                if (possibleMotions != null && possibleMotions.All != null)
+                Dictionary<string, int> allMotions = new Dictionary<string, int>();
+                foreach (Motion motion in possibleMotions.All)
                 {
-                    Dictionary<string, int> allMotions = new Dictionary<string, int>();
-                    foreach (Motion motion in possibleMotions.All)
-                    {
-                        allMotions.Add(motion.Name, motion.Id);
-                    }
-
-                    EdbotMotions = EdbotMotions.Union(allMotions).ToDictionary(k => k.Key, v => v.Value);
-
-                    ListedMotions?.Invoke(this, EventArgs.Empty);
+                    allMotions.Add(motion.Name, motion.Id);
                 }
+
+                EdbotMotions = EdbotMotions.Union(allMotions).ToDictionary(k => k.Key, v => v.Value);
+
+                ListedMotions?.Invoke(this, EventArgs.Empty);
             }
         }
 
         private void UpdateServoColourList(EdbotServerMessage edbotMessage)
         {
-            if (edbotMessage.Edbots != null && edbotMessage.Edbots.Count > 0)
-            {
-                Colours possibleColours = edbotMessage.Edbots.First().Value.Colours;
-                if (possibleColours != null)
-                {
-                    EdbotServoColours.Add("Blue", possibleColours.Blue);
-                    EdbotServoColours.Add("Cyan", possibleColours.Cyan);
-                    EdbotServoColours.Add("Green", possibleColours.Green);
-                    EdbotServoColours.Add("Magenta", possibleColours.Magenta);
-                    EdbotServoColours.Add("Off", possibleColours.Off);
-                    EdbotServoColours.Add("Red", possibleColours.Red);
-                    EdbotServoColours.Add("White", possibleColours.White);
-                    EdbotServoColours.Add("Yellow", possibleColours.Yellow);
+            if (!HasEdbots(edbotMessage)) return;
 
-                    ListedServoColours?.Invoke(this, EventArgs.Empty);
+            Colours possibleColours = edbotMessage.Edbots.First().Value.Colours;
+            if (possibleColours != null)
+            {
+                EdbotServoColours.Add("Blue", possibleColours.Blue);
+                EdbotServoColours.Add("Cyan", possibleColours.Cyan);
+                EdbotServoColours.Add("Green", possibleColours.Green);
+                EdbotServoColours.Add("Magenta", possibleColours.Magenta);
+                EdbotServoColours.Add("Off", possibleColours.Off);
+                EdbotServoColours.Add("Red", possibleColours.Red);
+                EdbotServoColours.Add("White", possibleColours.White);
+                EdbotServoColours.Add("Yellow", possibleColours.Yellow);
+
+                ListedServoColours?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void UpdateSensorValueList(EdbotServerMessage edbotMessage)
+        {
+            if (!HasEdbots(edbotMessage)) return;
+
+            foreach (KeyValuePair<string, Edbot> entry in edbotMessage.Edbots)
+            {
+                if (!EdbotSensorValues.ContainsKey(entry.Key))
+                {
+                    EdbotSensorValues.Add(entry.Key, new Dictionary<string, int>());
                 }
+
+                Reporters reporters = entry.Value.Reporters;
+                if (reporters != null)
+                {
+                    UpdateSensorPort(EdbotSensorValues[entry.Key], "Port1", reporters.Port1);
+                    UpdateSensorPort(EdbotSensorValues[entry.Key], "Port2", reporters.Port2);
+                    UpdateSensorPort(EdbotSensorValues[entry.Key], "Port3", reporters.Port3);
+                    UpdateSensorPort(EdbotSensorValues[entry.Key], "Port4", reporters.Port4);
+
+                    ListedSensors?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        private void UpdateSensorPort(Dictionary<string, int> portDictionary, string name, int? value)
+        {
+            if (!portDictionary.ContainsKey(name) && value.HasValue)
+            {
+                portDictionary.Add(name, value.Value);
+            }
+            else if (value.HasValue)
+            {
+                portDictionary[name] = value.Value;
             }
         }
     }

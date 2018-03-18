@@ -17,6 +17,14 @@
         <Button x:Name="ActivateMotionButton" Content="Activate motion" HorizontalAlignment="Left" Margin="240,95,0,0" VerticalAlignment="Top" Width="120" Click="ActivateMotionButton_Click" Height="22"/>
         <Button x:Name="SpeakButton" Content="Say" HorizontalAlignment="Left" Margin="240,128,0,0" VerticalAlignment="Top" Width="75" Click="SpeakButton_Click" Height="22"/>
         <TextBox x:Name="SpeakTextBox" HorizontalAlignment="Left" Height="22" Margin="325,128,0,0" TextWrapping="Wrap" Text="Hello Edbot" VerticalAlignment="Top" Width="175"/>
-
+        <Label x:Name="label_Copy" Content="Sensors" HorizontalAlignment="Left" Margin="240,161,0,0" VerticalAlignment="Top"/>
+        <ProgressBar x:Name="Port1ProgressBar" HorizontalAlignment="Left" Height="26" Margin="325,161,0,0" VerticalAlignment="Top" Width="175" Minimum="0" Maximum="1024"/>
+        <TextBlock Text="{Binding ElementName=Port1ProgressBar, Path=Value, StringFormat=Port1: {0}}" Width="175" Height="19" Margin="325,168,0,169" VerticalAlignment="Center" HorizontalAlignment="Left" />
+        <ProgressBar x:Name="Port2ProgressBar" HorizontalAlignment="Left" Height="26" Margin="325,192,0,0" VerticalAlignment="Top" Width="175" Minimum="0" Maximum="1024"/>
+        <TextBlock Text="{Binding ElementName=Port2ProgressBar, Path=Value, StringFormat=Port2: {0}}" Width="175" Height="19" Margin="325,199,0,138" VerticalAlignment="Center" HorizontalAlignment="Left" />
+        <ProgressBar x:Name="Port3ProgressBar" HorizontalAlignment="Left" Height="26" Margin="325,223,0,0" VerticalAlignment="Top" Width="175" Minimum="0" Maximum="1024"/>
+        <TextBlock Text="{Binding ElementName=Port3ProgressBar, Path=Value, StringFormat=Port3: {0}}" Width="175" Height="19" Margin="325,230,0,107" VerticalAlignment="Center" HorizontalAlignment="Left" />
+        <ProgressBar x:Name="Port4ProgressBar" HorizontalAlignment="Left" Height="26" Margin="325,254,0,0" VerticalAlignment="Top" Width="175" Minimum="0" Maximum="1024"/>
+        <TextBlock Text="{Binding ElementName=Port4ProgressBar, Path=Value, StringFormat=Port4: {0}}" Width="175" Height="19" Margin="325,261,0,76" VerticalAlignment="Center" HorizontalAlignment="Left" />
     </Grid>
 </Window>
